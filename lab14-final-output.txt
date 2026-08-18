@@ -1,0 +1,941 @@
+WARNING: Using incubator modules: jdk.incubator.vector
+Using Spark's default log4j profile: org/apache/spark/log4j2-defaults.properties
+26/08/12 19:40:45 WARN Utils: Your hostname, HPC, resolves to a loopback address: 127.0.1.1; using 10.255.255.254 instead (on interface lo)
+26/08/12 19:40:45 WARN Utils: Set SPARK_LOCAL_IP if you need to bind to another address
+Using Spark's default log4j profile: org/apache/spark/log4j2-defaults.properties
+Setting default log level to "WARN".
+To adjust logging level use sc.setLogLevel(newLevel). For SparkR, use setLogLevel(newLevel).
+26/08/12 19:40:46 WARN NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+[Stage 0:>                                                          (0 + 1) / 1]                                                                                ============================================================
+LAB 14 - BIG DATA ANALYTICS WITH PYSPARK
+============================================================
+
+Spark Version: 4.2.0
+Spark Session created successfully!
+
+============================================================
+ORIGINAL TRANSACTION DATA
+============================================================
++---+--------------+--------+------+-----------+----------+--------+-------------------+--------------+
+|id |transaction_id|customer|region|category   |unit_price|quantity|timestamp          |payment_method|
++---+--------------+--------+------+-----------+----------+--------+-------------------+--------------+
+|1  |T001          |Alice   |North |Electronics|899.99    |2       |2024-01-05 10:30:00|credit_card   |
+|2  |T002          |Bob     |South |Clothing   |45.0      |3       |2024-01-06 11:00:00|cash          |
+|3  |T003          |Charlie |East  |Electronics|199.5     |1       |2024-01-06 14:20:00|debit_card    |
+|4  |T004          |Alice   |North |Food       |12.5      |5       |2024-01-07 09:15:00|cash          |
+|5  |T005          |David   |West  |Electronics|450.0     |1       |2024-01-08 16:45:00|credit_card   |
+|6  |T006          |Eve     |South |Food       |22.0      |4       |2024-01-08 18:00:00|credit_card   |
+|7  |T007          |Frank   |North |Clothing   |75.0      |2       |2024-01-09 13:30:00|debit_card    |
+|8  |T008          |Grace   |East  |Food       |33.0      |3       |2024-01-10 10:00:00|cash          |
+|9  |T009          |Heidi   |West  |Electronics|600.0     |1       |2024-02-01 12:00:00|credit_card   |
+|10 |T010          |Ivan    |South |Clothing   |110.0     |2       |2024-02-02 15:30:00|debit_card    |
+|11 |T011          |Alice   |North |Electronics|250.0     |1       |2024-02-03 09:00:00|credit_card   |
+|12 |T012          |Bob     |South |Food       |18.0      |6       |2024-02-04 17:00:00|cash          |
+|13 |T013          |Charlie |East  |Clothing   |95.0      |1       |2024-02-05 11:45:00|credit_card   |
+|14 |T014          |David   |West  |Food       |8.5       |2       |2024-02-06 08:30:00|debit_card    |
+|15 |T015          |Eve     |South |Electronics|320.0     |1       |2024-02-07 14:00:00|credit_card   |
+|16 |T016          |Frank   |North |Food       |55.0      |3       |2024-03-01 10:15:00|cash          |
+|17 |T017          |Grace   |East  |Electronics|780.0     |2       |2024-03-02 16:00:00|credit_card   |
+|18 |T018          |Heidi   |West  |Clothing   |200.0     |1       |2024-03-03 12:30:00|debit_card    |
+|19 |T019          |Ivan    |South |Food       |40.0      |5       |2024-03-04 09:45:00|cash          |
+|20 |T020          |Alice   |North |Electronics|999.99    |1       |2024-03-05 11:00:00|credit_card   |
++---+--------------+--------+------+-----------+----------+--------+-------------------+--------------+
+
+
+Number of transactions: 20
+
+Schema:
+root
+ |-- id: integer (nullable = true)
+ |-- transaction_id: string (nullable = true)
+ |-- customer: string (nullable = true)
+ |-- region: string (nullable = true)
+ |-- category: string (nullable = true)
+ |-- unit_price: double (nullable = true)
+ |-- quantity: integer (nullable = true)
+ |-- timestamp: string (nullable = true)
+ |-- payment_method: string (nullable = true)
+
+
+============================================================
+ENRICHED TRANSACTION DATA
+============================================================
++--------------+--------+------+-----------+----------+--------+-------+-------------------+
+|transaction_id|customer|region|category   |unit_price|quantity|revenue|event_time         |
++--------------+--------+------+-----------+----------+--------+-------+-------------------+
+|T001          |Alice   |North |Electronics|899.99    |2       |1799.98|2024-01-05 10:30:00|
+|T002          |Bob     |South |Clothing   |45.0      |3       |135.0  |2024-01-06 11:00:00|
+|T003          |Charlie |East  |Electronics|199.5     |1       |199.5  |2024-01-06 14:20:00|
+|T004          |Alice   |North |Food       |12.5      |5       |62.5   |2024-01-07 09:15:00|
+|T005          |David   |West  |Electronics|450.0     |1       |450.0  |2024-01-08 16:45:00|
+|T006          |Eve     |South |Food       |22.0      |4       |88.0   |2024-01-08 18:00:00|
+|T007          |Frank   |North |Clothing   |75.0      |2       |150.0  |2024-01-09 13:30:00|
+|T008          |Grace   |East  |Food       |33.0      |3       |99.0   |2024-01-10 10:00:00|
+|T009          |Heidi   |West  |Electronics|600.0     |1       |600.0  |2024-02-01 12:00:00|
+|T010          |Ivan    |South |Clothing   |110.0     |2       |220.0  |2024-02-02 15:30:00|
+|T011          |Alice   |North |Electronics|250.0     |1       |250.0  |2024-02-03 09:00:00|
+|T012          |Bob     |South |Food       |18.0      |6       |108.0  |2024-02-04 17:00:00|
+|T013          |Charlie |East  |Clothing   |95.0      |1       |95.0   |2024-02-05 11:45:00|
+|T014          |David   |West  |Food       |8.5       |2       |17.0   |2024-02-06 08:30:00|
+|T015          |Eve     |South |Electronics|320.0     |1       |320.0  |2024-02-07 14:00:00|
+|T016          |Frank   |North |Food       |55.0      |3       |165.0  |2024-03-01 10:15:00|
+|T017          |Grace   |East  |Electronics|780.0     |2       |1560.0 |2024-03-02 16:00:00|
+|T018          |Heidi   |West  |Clothing   |200.0     |1       |200.0  |2024-03-03 12:30:00|
+|T019          |Ivan    |South |Food       |40.0      |5       |200.0  |2024-03-04 09:45:00|
+|T020          |Alice   |North |Electronics|999.99    |1       |999.99 |2024-03-05 11:00:00|
++--------------+--------+------+-----------+----------+--------+-------+-------------------+
+
+
+Enriched Schema:
+root
+ |-- id: integer (nullable = true)
+ |-- transaction_id: string (nullable = true)
+ |-- customer: string (nullable = true)
+ |-- region: string (nullable = true)
+ |-- category: string (nullable = true)
+ |-- unit_price: double (nullable = true)
+ |-- quantity: integer (nullable = true)
+ |-- timestamp: string (nullable = true)
+ |-- payment_method: string (nullable = true)
+ |-- revenue: double (nullable = true)
+ |-- event_time: timestamp (nullable = true)
+
+
+============================================================
+PART 1 - DESCRIPTIVE ANALYTICS
+============================================================
+
+1. SUMMARY STATISTICS
++-------+------------------+------------------+------------------+
+|summary|        unit_price|          quantity|           revenue|
++-------+------------------+------------------+------------------+
+|  count|                20|                20|                20|
+|   mean|           260.674|              2.35|385.94849999999997|
+| stddev|316.39990224564326|1.5652475842498528| 497.3806446329876|
+|    min|               8.5|                 1|              17.0|
+|    max|            999.99|                 6|           1799.98|
++-------+------------------+------------------+------------------+
+
+
+2. REVENUE BY CATEGORY
++-----------+-------------+-----------+-----------------+----------+
+|   category|total_revenue|avg_revenue|transaction_count|units_sold|
++-----------+-------------+-----------+-----------------+----------+
+|Electronics|      6179.47|     772.43|                8|        10|
+|   Clothing|        800.0|      160.0|                5|         9|
+|       Food|        739.5|     105.64|                7|        28|
++-----------+-------------+-----------+-----------------+----------+
+
+
+3. REVENUE BY REGION
++------+-------------+-----------+-----------------+----------+
+|region|total_revenue|avg_revenue|transaction_count|units_sold|
++------+-------------+-----------+-----------------+----------+
+| North|      3427.47|     571.25|                6|        14|
+|  East|       1953.5|     488.38|                4|         7|
+|  West|       1267.0|     316.75|                4|         5|
+| South|       1071.0|      178.5|                6|        21|
++------+-------------+-----------+-----------------+----------+
+
+
+============================================================
+PART 2 - DIAGNOSTIC ANALYTICS
+============================================================
+
+1. REGION x CATEGORY REVENUE PIVOT
++------+--------+-----------+-----+
+|region|Clothing|Electronics| Food|
++------+--------+-----------+-----+
+|  East|    95.0|     1759.5| 99.0|
+| North|   150.0|    3049.97|227.5|
+| South|   355.0|      320.0|396.0|
+|  West|   200.0|     1050.0| 17.0|
++------+--------+-----------+-----+
+
+
+2. DRILL-DOWN - NORTH REGION
++--------------+--------+-----------+-------+-------------------+
+|transaction_id|customer|category   |revenue|event_time         |
++--------------+--------+-----------+-------+-------------------+
+|T001          |Alice   |Electronics|1799.98|2024-01-05 10:30:00|
+|T020          |Alice   |Electronics|999.99 |2024-03-05 11:00:00|
+|T011          |Alice   |Electronics|250.0  |2024-02-03 09:00:00|
+|T016          |Frank   |Food       |165.0  |2024-03-01 10:15:00|
+|T007          |Frank   |Clothing   |150.0  |2024-01-09 13:30:00|
+|T004          |Alice   |Food       |62.5   |2024-01-07 09:15:00|
++--------------+--------+-----------+-------+-------------------+
+
+
+3. MONTHLY REVENUE TREND
++-------+-------------+-----------------+
+|  month|total_revenue|transaction_count|
++-------+-------------+-----------------+
+|2024-01|      2983.98|                8|
+|2024-02|       1610.0|                7|
+|2024-03|      3124.99|                5|
++-------+-------------+-----------------+
+
+
+4. AVERAGE REVENUE BY PAYMENT METHOD
++--------------+-----------+-------------+-----------------+
+|payment_method|avg_revenue|total_revenue|transaction_count|
++--------------+-----------+-------------+-----------------+
+|   credit_card|     684.77|      6162.97|                9|
+|    debit_card|      157.3|        786.5|                5|
+|          cash|     128.25|        769.5|                6|
++--------------+-----------+-------------+-----------------+
+
+
+============================================================
+PART 3 - WINDOW FUNCTIONS
+============================================================
+
+1. TRANSACTION RANK WITHIN EACH REGION
++------+--------------+--------+-------+------------+
+|region|transaction_id|customer|revenue|revenue_rank|
++------+--------------+--------+-------+------------+
+|East  |T017          |Grace   |1560.0 |1           |
+|East  |T003          |Charlie |199.5  |2           |
+|East  |T008          |Grace   |99.0   |3           |
+|East  |T013          |Charlie |95.0   |4           |
+|North |T001          |Alice   |1799.98|1           |
+|North |T020          |Alice   |999.99 |2           |
+|North |T011          |Alice   |250.0  |3           |
+|North |T016          |Frank   |165.0  |4           |
+|North |T007          |Frank   |150.0  |5           |
+|North |T004          |Alice   |62.5   |6           |
+|South |T015          |Eve     |320.0  |1           |
+|South |T010          |Ivan    |220.0  |2           |
+|South |T019          |Ivan    |200.0  |3           |
+|South |T002          |Bob     |135.0  |4           |
+|South |T012          |Bob     |108.0  |5           |
+|South |T006          |Eve     |88.0   |6           |
+|West  |T009          |Heidi   |600.0  |1           |
+|West  |T005          |David   |450.0  |2           |
+|West  |T018          |Heidi   |200.0  |3           |
+|West  |T014          |David   |17.0   |4           |
++------+--------------+--------+-------+------------+
+
+
+2. TOP 2 TRANSACTIONS PER REGION
++------+--------------+--------+-------+------------+
+|region|transaction_id|customer|revenue|revenue_rank|
++------+--------------+--------+-------+------------+
+|East  |T017          |Grace   |1560.0 |1           |
+|East  |T003          |Charlie |199.5  |2           |
+|North |T001          |Alice   |1799.98|1           |
+|North |T020          |Alice   |999.99 |2           |
+|South |T015          |Eve     |320.0  |1           |
+|South |T010          |Ivan    |220.0  |2           |
+|West  |T009          |Heidi   |600.0  |1           |
+|West  |T005          |David   |450.0  |2           |
++------+--------------+--------+-------+------------+
+
+
+3. RUNNING REVENUE TOTAL BY REGION
++------+--------------+-------------------+-------+---------------+
+|region|transaction_id|event_time         |revenue|running_revenue|
++------+--------------+-------------------+-------+---------------+
+|East  |T003          |2024-01-06 14:20:00|199.5  |199.5          |
+|East  |T008          |2024-01-10 10:00:00|99.0   |298.5          |
+|East  |T013          |2024-02-05 11:45:00|95.0   |393.5          |
+|East  |T017          |2024-03-02 16:00:00|1560.0 |1953.5         |
+|North |T001          |2024-01-05 10:30:00|1799.98|1799.98        |
+|North |T004          |2024-01-07 09:15:00|62.5   |1862.48        |
+|North |T007          |2024-01-09 13:30:00|150.0  |2012.48        |
+|North |T011          |2024-02-03 09:00:00|250.0  |2262.48        |
+|North |T016          |2024-03-01 10:15:00|165.0  |2427.48        |
+|North |T020          |2024-03-05 11:00:00|999.99 |3427.47        |
+|South |T002          |2024-01-06 11:00:00|135.0  |135.0          |
+|South |T006          |2024-01-08 18:00:00|88.0   |223.0          |
+|South |T010          |2024-02-02 15:30:00|220.0  |443.0          |
+|South |T012          |2024-02-04 17:00:00|108.0  |551.0          |
+|South |T015          |2024-02-07 14:00:00|320.0  |871.0          |
+|South |T019          |2024-03-04 09:45:00|200.0  |1071.0         |
+|West  |T005          |2024-01-08 16:45:00|450.0  |450.0          |
+|West  |T009          |2024-02-01 12:00:00|600.0  |1050.0         |
+|West  |T014          |2024-02-06 08:30:00|17.0   |1067.0         |
+|West  |T018          |2024-03-03 12:30:00|200.0  |1267.0         |
++------+--------------+-------------------+-------+---------------+
+
+
+4. REVENUE QUARTILES
++--------------+--------+-------+----------------+
+|transaction_id|customer|revenue|revenue_quartile|
++--------------+--------+-------+----------------+
+|T014          |David   |17.0   |1               |
+|T004          |Alice   |62.5   |1               |
+|T006          |Eve     |88.0   |1               |
+|T013          |Charlie |95.0   |1               |
+|T008          |Grace   |99.0   |1               |
+|T012          |Bob     |108.0  |2               |
+|T002          |Bob     |135.0  |2               |
+|T007          |Frank   |150.0  |2               |
+|T016          |Frank   |165.0  |2               |
+|T003          |Charlie |199.5  |2               |
+|T018          |Heidi   |200.0  |3               |
+|T019          |Ivan    |200.0  |3               |
+|T010          |Ivan    |220.0  |3               |
+|T011          |Alice   |250.0  |3               |
+|T015          |Eve     |320.0  |3               |
+|T005          |David   |450.0  |4               |
+|T009          |Heidi   |600.0  |4               |
+|T020          |Alice   |999.99 |4               |
+|T017          |Grace   |1560.0 |4               |
+|T001          |Alice   |1799.98|4               |
++--------------+--------+-------+----------------+
+
+
+5. PREVIOUS PURCHASE PER CUSTOMER
++--------+--------------+-------------------+-------+------------+
+|customer|transaction_id|event_time         |revenue|prev_revenue|
++--------+--------------+-------------------+-------+------------+
+|Alice   |T001          |2024-01-05 10:30:00|1799.98|NULL        |
+|Alice   |T004          |2024-01-07 09:15:00|62.5   |1799.98     |
+|Alice   |T011          |2024-02-03 09:00:00|250.0  |62.5        |
+|Alice   |T020          |2024-03-05 11:00:00|999.99 |250.0       |
+|Bob     |T002          |2024-01-06 11:00:00|135.0  |NULL        |
+|Bob     |T012          |2024-02-04 17:00:00|108.0  |135.0       |
+|Charlie |T003          |2024-01-06 14:20:00|199.5  |NULL        |
+|Charlie |T013          |2024-02-05 11:45:00|95.0   |199.5       |
+|David   |T005          |2024-01-08 16:45:00|450.0  |NULL        |
+|David   |T014          |2024-02-06 08:30:00|17.0   |450.0       |
+|Eve     |T006          |2024-01-08 18:00:00|88.0   |NULL        |
+|Eve     |T015          |2024-02-07 14:00:00|320.0  |88.0        |
+|Frank   |T007          |2024-01-09 13:30:00|150.0  |NULL        |
+|Frank   |T016          |2024-03-01 10:15:00|165.0  |150.0       |
+|Grace   |T008          |2024-01-10 10:00:00|99.0   |NULL        |
+|Grace   |T017          |2024-03-02 16:00:00|1560.0 |99.0        |
+|Heidi   |T009          |2024-02-01 12:00:00|600.0  |NULL        |
+|Heidi   |T018          |2024-03-03 12:30:00|200.0  |600.0       |
+|Ivan    |T010          |2024-02-02 15:30:00|220.0  |NULL        |
+|Ivan    |T019          |2024-03-04 09:45:00|200.0  |220.0       |
++--------+--------------+-------------------+-------+------------+
+
+
+============================================================
+PART 4 - FEATURE ENGINEERING AND RFM
+============================================================
+
+1. TRANSACTION-LEVEL FEATURES
++--------------+-------------------+-------+--------+----+---+---------+-----+----------+-------------+-------------+
+|transaction_id|event_time         |revenue|quantity|hour|day|dayofweek|month|is_weekend|is_high_value|high_quantity|
++--------------+-------------------+-------+--------+----+---+---------+-----+----------+-------------+-------------+
+|T001          |2024-01-05 10:30:00|1799.98|2       |10  |5  |6        |1    |0         |1            |0            |
+|T002          |2024-01-06 11:00:00|135.0  |3       |11  |6  |7        |1    |1         |0            |0            |
+|T003          |2024-01-06 14:20:00|199.5  |1       |14  |6  |7        |1    |1         |0            |0            |
+|T004          |2024-01-07 09:15:00|62.5   |5       |9   |7  |1        |1    |1         |0            |1            |
+|T005          |2024-01-08 16:45:00|450.0  |1       |16  |8  |2        |1    |0         |1            |0            |
+|T006          |2024-01-08 18:00:00|88.0   |4       |18  |8  |2        |1    |0         |0            |1            |
+|T007          |2024-01-09 13:30:00|150.0  |2       |13  |9  |3        |1    |0         |0            |0            |
+|T008          |2024-01-10 10:00:00|99.0   |3       |10  |10 |4        |1    |0         |0            |0            |
+|T009          |2024-02-01 12:00:00|600.0  |1       |12  |1  |5        |2    |0         |1            |0            |
+|T010          |2024-02-02 15:30:00|220.0  |2       |15  |2  |6        |2    |0         |0            |0            |
+|T011          |2024-02-03 09:00:00|250.0  |1       |9   |3  |7        |2    |1         |0            |0            |
+|T012          |2024-02-04 17:00:00|108.0  |6       |17  |4  |1        |2    |1         |0            |1            |
+|T013          |2024-02-05 11:45:00|95.0   |1       |11  |5  |2        |2    |0         |0            |0            |
+|T014          |2024-02-06 08:30:00|17.0   |2       |8   |6  |3        |2    |0         |0            |0            |
+|T015          |2024-02-07 14:00:00|320.0  |1       |14  |7  |4        |2    |0         |0            |0            |
+|T016          |2024-03-01 10:15:00|165.0  |3       |10  |1  |6        |3    |0         |0            |0            |
+|T017          |2024-03-02 16:00:00|1560.0 |2       |16  |2  |7        |3    |1         |1            |0            |
+|T018          |2024-03-03 12:30:00|200.0  |1       |12  |3  |1        |3    |1         |0            |0            |
+|T019          |2024-03-04 09:45:00|200.0  |5       |9   |4  |2        |3    |0         |0            |1            |
+|T020          |2024-03-05 11:00:00|999.99 |1       |11  |5  |3        |3    |0         |1            |0            |
++--------------+-------------------+-------+--------+----+---+---------+-----+----------+-------------+-------------+
+
+
+2. RFM REFERENCE DATE
+Reference date: 2024-03-05 11:00:00
+
+3. RAW CUSTOMER RFM VALUES
++--------+------------+---------+--------+
+|customer|recency_days|frequency|monetary|
++--------+------------+---------+--------+
+|Alice   |0           |4        |3112.47 |
+|Bob     |30          |2        |243.0   |
+|Charlie |29          |2        |294.5   |
+|David   |28          |2        |467.0   |
+|Eve     |27          |2        |408.0   |
+|Frank   |4           |2        |315.0   |
+|Grace   |3           |2        |1659.0  |
+|Heidi   |2           |2        |800.0   |
+|Ivan    |1           |2        |420.0   |
++--------+------------+---------+--------+
+
+
+4. RFM SCORES
++--------+------------+---------+--------+---+---+---+-------+--------+
+|customer|recency_days|frequency|monetary|R  |F  |M  |rfm_sum|rfm_cell|
++--------+------------+---------+--------+---+---+---+-------+--------+
+|Alice   |0           |4        |3112.47 |4  |4  |4  |12     |R4F4M4  |
+|David   |28          |2        |467.0   |2  |3  |3  |8      |R2F3M3  |
+|Heidi   |2           |2        |800.0   |4  |1  |3  |8      |R4F1M3  |
+|Grace   |3           |2        |1659.0  |3  |1  |4  |8      |R3F1M4  |
+|Ivan    |1           |2        |420.0   |4  |1  |2  |7      |R4F1M2  |
+|Bob     |30          |2        |243.0   |1  |4  |1  |6      |R1F4M1  |
+|Frank   |4           |2        |315.0   |3  |2  |1  |6      |R3F2M1  |
+|Eve     |27          |2        |408.0   |2  |2  |2  |6      |R2F2M2  |
+|Charlie |29          |2        |294.5   |1  |3  |1  |5      |R1F3M1  |
++--------+------------+---------+--------+---+---+---+-------+--------+
+
+
+============================================================
+PART 5 - CUSTOMER SEGMENTATION
+============================================================
+
+1. CUSTOMER SEGMENTS
++--------+------------+---------+--------+---+---+---+---+-------+------------------+
+|customer|recency_days|frequency|monetary|R  |F  |M  |fm |rfm_sum|segment           |
++--------+------------+---------+--------+---+---+---+---+-------+------------------+
+|Alice   |0           |4        |3112.47 |4  |4  |4  |4.0|12     |Champions         |
+|David   |28          |2        |467.0   |2  |3  |3  |3.0|8      |Loyal             |
+|Heidi   |2           |2        |800.0   |4  |1  |3  |2.0|8      |Potential Loyalist|
+|Grace   |3           |2        |1659.0  |3  |1  |4  |2.5|8      |Potential Loyalist|
+|Ivan    |1           |2        |420.0   |4  |1  |2  |1.5|7      |New / Promising   |
+|Bob     |30          |2        |243.0   |1  |4  |1  |2.5|6      |Hibernating / Lost|
+|Frank   |4           |2        |315.0   |3  |2  |1  |1.5|6      |New / Promising   |
+|Eve     |27          |2        |408.0   |2  |2  |2  |2.0|6      |Hibernating / Lost|
+|Charlie |29          |2        |294.5   |1  |3  |1  |2.0|5      |Hibernating / Lost|
++--------+------------+---------+--------+---+---+---+---+-------+------------------+
+
+
+============================================================
+PART 5 - CUSTOMER SEGMENTATION
+============================================================
+
+1. CUSTOMER SEGMENTS
++--------+------------+---------+--------+---+---+---+---+-------+------------------+
+|customer|recency_days|frequency|monetary|R  |F  |M  |fm |rfm_sum|segment           |
++--------+------------+---------+--------+---+---+---+---+-------+------------------+
+|Alice   |0           |4        |3112.47 |4  |4  |4  |4.0|12     |Champions         |
+|David   |28          |2        |467.0   |2  |3  |3  |3.0|8      |Loyal             |
+|Heidi   |2           |2        |800.0   |4  |1  |3  |2.0|8      |Potential Loyalist|
+|Grace   |3           |2        |1659.0  |3  |1  |4  |2.5|8      |Potential Loyalist|
+|Ivan    |1           |2        |420.0   |4  |1  |2  |1.5|7      |New / Promising   |
+|Bob     |30          |2        |243.0   |1  |4  |1  |2.5|6      |Hibernating / Lost|
+|Frank   |4           |2        |315.0   |3  |2  |1  |1.5|6      |New / Promising   |
+|Eve     |27          |2        |408.0   |2  |2  |2  |2.0|6      |Hibernating / Lost|
+|Charlie |29          |2        |294.5   |1  |3  |1  |2.0|5      |Hibernating / Lost|
++--------+------------+---------+--------+---+---+---+---+-------+------------------+
+
+
+============================================================
+PART 6 - ANOMALY DETECTION
+============================================================
+
+1. GLOBAL REVENUE STATISTICS
+Mean Revenue:  385.95
+Std Deviation: 497.38
+
+2. TRANSACTIONS WITH Z-SCORES
++--------------+--------+-----------+-------+------+----------+
+|transaction_id|customer|category   |revenue|z     |is_anomaly|
++--------------+--------+-----------+-------+------+----------+
+|T001          |Alice   |Electronics|1799.98|2.843 |true      |
+|T017          |Grace   |Electronics|1560.0 |2.36  |true      |
+|T020          |Alice   |Electronics|999.99 |1.235 |false     |
+|T014          |David   |Food       |17.0   |-0.742|false     |
+|T004          |Alice   |Food       |62.5   |-0.65 |false     |
+|T006          |Eve     |Food       |88.0   |-0.599|false     |
+|T013          |Charlie |Clothing   |95.0   |-0.585|false     |
+|T008          |Grace   |Food       |99.0   |-0.577|false     |
+|T012          |Bob     |Food       |108.0  |-0.559|false     |
+|T002          |Bob     |Clothing   |135.0  |-0.505|false     |
+|T007          |Frank   |Clothing   |150.0  |-0.474|false     |
+|T016          |Frank   |Food       |165.0  |-0.444|false     |
+|T009          |Heidi   |Electronics|600.0  |0.43  |false     |
+|T003          |Charlie |Electronics|199.5  |-0.375|false     |
+|T018          |Heidi   |Clothing   |200.0  |-0.374|false     |
+|T019          |Ivan    |Food       |200.0  |-0.374|false     |
+|T010          |Ivan    |Clothing   |220.0  |-0.334|false     |
+|T011          |Alice   |Electronics|250.0  |-0.273|false     |
+|T015          |Eve     |Electronics|320.0  |-0.133|false     |
+|T005          |David   |Electronics|450.0  |0.129 |false     |
++--------------+--------+-----------+-------+------+----------+
+
+
+3. GLOBAL ANOMALIES - |z| > 2
++--------------+--------+-----------+-------+-----+
+|transaction_id|customer|category   |revenue|z    |
++--------------+--------+-----------+-------+-----+
+|T001          |Alice   |Electronics|1799.98|2.843|
+|T017          |Grace   |Electronics|1560.0 |2.36 |
++--------------+--------+-----------+-------+-----+
+
+Number of global anomalies: 2
+
+4. PER-CATEGORY ANOMALY DETECTION
++--------------+--------+-----------+-------+-------------+---------------+----------+----------------+
+|transaction_id|customer|category   |revenue|category_mean|category_stddev|category_z|category_anomaly|
++--------------+--------+-----------+-------+-------------+---------------+----------+----------------+
+|T013          |Charlie |Clothing   |95.0   |160.0        |50.37          |-1.29     |false           |
+|T010          |Ivan    |Clothing   |220.0  |160.0        |50.37          |1.191     |false           |
+|T018          |Heidi   |Clothing   |200.0  |160.0        |50.37          |0.794     |false           |
+|T002          |Bob     |Clothing   |135.0  |160.0        |50.37          |-0.496    |false           |
+|T007          |Frank   |Clothing   |150.0  |160.0        |50.37          |-0.199    |false           |
+|T001          |Alice   |Electronics|1799.98|772.43       |617.31         |1.665     |false           |
+|T017          |Grace   |Electronics|1560.0 |772.43       |617.31         |1.276     |false           |
+|T003          |Charlie |Electronics|199.5  |772.43       |617.31         |-0.928    |false           |
+|T011          |Alice   |Electronics|250.0  |772.43       |617.31         |-0.846    |false           |
+|T015          |Eve     |Electronics|320.0  |772.43       |617.31         |-0.733    |false           |
+|T005          |David   |Electronics|450.0  |772.43       |617.31         |-0.522    |false           |
+|T020          |Alice   |Electronics|999.99 |772.43       |617.31         |0.369     |false           |
+|T009          |Heidi   |Electronics|600.0  |772.43       |617.31         |-0.279    |false           |
+|T019          |Ivan    |Food       |200.0  |105.64       |61.25          |1.541     |false           |
+|T014          |David   |Food       |17.0   |105.64       |61.25          |-1.447    |false           |
+|T016          |Frank   |Food       |165.0  |105.64       |61.25          |0.969     |false           |
+|T004          |Alice   |Food       |62.5   |105.64       |61.25          |-0.704    |false           |
+|T006          |Eve     |Food       |88.0   |105.64       |61.25          |-0.288    |false           |
+|T008          |Grace   |Food       |99.0   |105.64       |61.25          |-0.108    |false           |
+|T012          |Bob     |Food       |108.0  |105.64       |61.25          |0.038     |false           |
++--------------+--------+-----------+-------+-------------+---------------+----------+----------------+
+
+
+============================================================
+PART 7 - DATA ENGINEERING WITH PARQUET
+============================================================
+
+1. WRITING PARQUET DATA
+Output path: /home/systemadmin/lab14-output/transactions_parquet
+Parquet write completed successfully!
+
+2. READING PARQUET DATA
+Parquet data read successfully!
+
+3. VERIFYING PARQUET ROUND TRIP
+Original row count: 20
+Parquet row count:  20
+Row count verification: PASSED
+
+Parquet Schema:
+root
+ |-- id: integer (nullable = true)
+ |-- transaction_id: string (nullable = true)
+ |-- customer: string (nullable = true)
+ |-- category: string (nullable = true)
+ |-- unit_price: double (nullable = true)
+ |-- quantity: integer (nullable = true)
+ |-- timestamp: string (nullable = true)
+ |-- payment_method: string (nullable = true)
+ |-- revenue: double (nullable = true)
+ |-- event_time: timestamp (nullable = true)
+ |-- hour: integer (nullable = true)
+ |-- day: integer (nullable = true)
+ |-- dayofweek: integer (nullable = true)
+ |-- month: integer (nullable = true)
+ |-- is_weekend: integer (nullable = true)
+ |-- is_high_value: integer (nullable = true)
+ |-- high_quantity: integer (nullable = true)
+ |-- region: string (nullable = true)
+
+
+Sample Parquet Data:
++--------------+--------+-----------+-------+-------------------+------+
+|transaction_id|customer|category   |revenue|event_time         |region|
++--------------+--------+-----------+-------+-------------------+------+
+|T003          |Charlie |Electronics|199.5  |2024-01-06 14:20:00|East  |
+|T008          |Grace   |Food       |99.0   |2024-01-10 10:00:00|East  |
+|T013          |Charlie |Clothing   |95.0   |2024-02-05 11:45:00|East  |
+|T017          |Grace   |Electronics|1560.0 |2024-03-02 16:00:00|East  |
+|T001          |Alice   |Electronics|1799.98|2024-01-05 10:30:00|North |
+|T004          |Alice   |Food       |62.5   |2024-01-07 09:15:00|North |
+|T007          |Frank   |Clothing   |150.0  |2024-01-09 13:30:00|North |
+|T011          |Alice   |Electronics|250.0  |2024-02-03 09:00:00|North |
+|T016          |Frank   |Food       |165.0  |2024-03-01 10:15:00|North |
+|T020          |Alice   |Electronics|999.99 |2024-03-05 11:00:00|North |
+|T002          |Bob     |Clothing   |135.0  |2024-01-06 11:00:00|South |
+|T006          |Eve     |Food       |88.0   |2024-01-08 18:00:00|South |
+|T010          |Ivan    |Clothing   |220.0  |2024-02-02 15:30:00|South |
+|T012          |Bob     |Food       |108.0  |2024-02-04 17:00:00|South |
+|T015          |Eve     |Electronics|320.0  |2024-02-07 14:00:00|South |
+|T019          |Ivan    |Food       |200.0  |2024-03-04 09:45:00|South |
+|T005          |David   |Electronics|450.0  |2024-01-08 16:45:00|West  |
+|T009          |Heidi   |Electronics|600.0  |2024-02-01 12:00:00|West  |
+|T014          |David   |Food       |17.0   |2024-02-06 08:30:00|West  |
+|T018          |Heidi   |Clothing   |200.0  |2024-03-03 12:30:00|West  |
++--------------+--------+-----------+-------+-------------------+------+
+
+
+============================================================
+PART 8 - HANDS-ON EXERCISES
+============================================================
+
+EXERCISE 1 - MOST EXPENSIVE CATEGORY PER REGION
++--------------+------+-----------+-------+--------+----------------+
+|transaction_id|region|category   |revenue|quantity|revenue_per_unit|
++--------------+------+-----------+-------+--------+----------------+
+|T001          |North |Electronics|1799.98|2       |899.99          |
+|T002          |South |Clothing   |135.0  |3       |45.0            |
+|T003          |East  |Electronics|199.5  |1       |199.5           |
+|T004          |North |Food       |62.5   |5       |12.5            |
+|T005          |West  |Electronics|450.0  |1       |450.0           |
+|T006          |South |Food       |88.0   |4       |22.0            |
+|T007          |North |Clothing   |150.0  |2       |75.0            |
+|T008          |East  |Food       |99.0   |3       |33.0            |
+|T009          |West  |Electronics|600.0  |1       |600.0           |
+|T010          |South |Clothing   |220.0  |2       |110.0           |
+|T011          |North |Electronics|250.0  |1       |250.0           |
+|T012          |South |Food       |108.0  |6       |18.0            |
+|T013          |East  |Clothing   |95.0   |1       |95.0            |
+|T014          |West  |Food       |17.0   |2       |8.5             |
+|T015          |South |Electronics|320.0  |1       |320.0           |
+|T016          |North |Food       |165.0  |3       |55.0            |
+|T017          |East  |Electronics|1560.0 |2       |780.0           |
+|T018          |West  |Clothing   |200.0  |1       |200.0           |
+|T019          |South |Food       |200.0  |5       |40.0            |
+|T020          |North |Electronics|999.99 |1       |999.99          |
++--------------+------+-----------+-------+--------+----------------+
+
+
+AVERAGE REVENUE PER UNIT BY REGION AND CATEGORY
++------+-----------+--------------------+
+|region|category   |avg_revenue_per_unit|
++------+-----------+--------------------+
+|East  |Electronics|489.75              |
+|East  |Clothing   |95.0                |
+|East  |Food       |33.0                |
+|North |Electronics|716.66              |
+|North |Clothing   |75.0                |
+|North |Food       |33.75               |
+|South |Electronics|320.0               |
+|South |Clothing   |77.5                |
+|South |Food       |26.67               |
+|West  |Electronics|525.0               |
+|West  |Clothing   |200.0               |
+|West  |Food       |8.5                 |
++------+-----------+--------------------+
+
+
+CATEGORY RANK WITHIN EACH REGION
++------+-----------+--------------------+-------------+
+|region|category   |avg_revenue_per_unit|category_rank|
++------+-----------+--------------------+-------------+
+|East  |Electronics|489.75              |1            |
+|East  |Clothing   |95.0                |2            |
+|East  |Food       |33.0                |3            |
+|North |Electronics|716.66              |1            |
+|North |Clothing   |75.0                |2            |
+|North |Food       |33.75               |3            |
+|South |Electronics|320.0               |1            |
+|South |Clothing   |77.5                |2            |
+|South |Food       |26.67               |3            |
+|West  |Electronics|525.0               |1            |
+|West  |Clothing   |200.0               |2            |
+|West  |Food       |8.5                 |3            |
++------+-----------+--------------------+-------------+
+
+
+MOST EXPENSIVE CATEGORY PER REGION
++------+-----------+--------------------+
+|region|category   |avg_revenue_per_unit|
++------+-----------+--------------------+
+|East  |Electronics|489.75              |
+|North |Electronics|716.66              |
+|South |Electronics|320.0               |
+|West  |Electronics|525.0               |
++------+-----------+--------------------+
+
+
+============================================================
+EXERCISE 2 - CREDIT CARD VS CASH
+============================================================
+
+PAYMENT METHOD COMPARISON
++--------------+-----------+-------------+-----------------+
+|payment_method|avg_revenue|total_revenue|transaction_count|
++--------------+-----------+-------------+-----------------+
+|credit_card   |684.77     |6162.97      |9                |
+|cash          |128.25     |769.5        |6                |
++--------------+-----------+-------------+-----------------+
+
+
+Credit Card Average Revenue: $684.77
+Cash Average Revenue:        $128.25
+Difference:                  $556.52
+Conclusion: Credit card transactions have higher average revenue.
+
+============================================================
+EXERCISE 3 - WEEKEND EFFECT
+============================================================
+
+WEEKEND VS WEEKDAY COMPARISON
++--------+-----------+-------------+-----------------+----------+
+|day_type|avg_revenue|total_revenue|transaction_count|units_sold|
++--------+-----------+-------------+-----------------+----------+
+|Weekday |400.31     |5203.97      |13               |28        |
+|Weekend |359.29     |2515.0       |7                |19        |
++--------+-----------+-------------+-----------------+----------+
+
+
+Weekend Average Revenue: $359.29
+Weekday Average Revenue: $400.31
+Difference:              $-41.02
+Conclusion: Weekday transactions have higher average revenue.
+
+============================================================
+EXERCISE 4 - CUSTOMER PURCHASE CHANGE
+============================================================
+
+CUSTOMER PURCHASE CHANGES
++--------+--------------+-------------------+-------+----------------+--------------+--------------+
+|customer|transaction_id|event_time         |revenue|previous_revenue|revenue_change|purchase_trend|
++--------+--------------+-------------------+-------+----------------+--------------+--------------+
+|Alice   |T001          |2024-01-05 10:30:00|1799.98|NULL            |NULL          |First Purchase|
+|Alice   |T004          |2024-01-07 09:15:00|62.5   |1799.98         |-1737.48      |Decrease      |
+|Alice   |T011          |2024-02-03 09:00:00|250.0  |62.5            |187.5         |Increase      |
+|Alice   |T020          |2024-03-05 11:00:00|999.99 |250.0           |749.99        |Increase      |
+|Bob     |T002          |2024-01-06 11:00:00|135.0  |NULL            |NULL          |First Purchase|
+|Bob     |T012          |2024-02-04 17:00:00|108.0  |135.0           |-27.0         |Decrease      |
+|Charlie |T003          |2024-01-06 14:20:00|199.5  |NULL            |NULL          |First Purchase|
+|Charlie |T013          |2024-02-05 11:45:00|95.0   |199.5           |-104.5        |Decrease      |
+|David   |T005          |2024-01-08 16:45:00|450.0  |NULL            |NULL          |First Purchase|
+|David   |T014          |2024-02-06 08:30:00|17.0   |450.0           |-433.0        |Decrease      |
+|Eve     |T006          |2024-01-08 18:00:00|88.0   |NULL            |NULL          |First Purchase|
+|Eve     |T015          |2024-02-07 14:00:00|320.0  |88.0            |232.0         |Increase      |
+|Frank   |T007          |2024-01-09 13:30:00|150.0  |NULL            |NULL          |First Purchase|
+|Frank   |T016          |2024-03-01 10:15:00|165.0  |150.0           |15.0          |Increase      |
+|Grace   |T008          |2024-01-10 10:00:00|99.0   |NULL            |NULL          |First Purchase|
+|Grace   |T017          |2024-03-02 16:00:00|1560.0 |99.0            |1461.0        |Increase      |
+|Heidi   |T009          |2024-02-01 12:00:00|600.0  |NULL            |NULL          |First Purchase|
+|Heidi   |T018          |2024-03-03 12:30:00|200.0  |600.0           |-400.0        |Decrease      |
+|Ivan    |T010          |2024-02-02 15:30:00|220.0  |NULL            |NULL          |First Purchase|
+|Ivan    |T019          |2024-03-04 09:45:00|200.0  |220.0           |-20.0         |Decrease      |
++--------+--------------+-------------------+-------+----------------+--------------+--------------+
+
+
+============================================================
+EXERCISE 5 - HIGH-VALUE CUSTOMERS
+============================================================
+
+CUSTOMER TOTAL SPENDING
++--------+--------------+-----------------+---------------+
+|customer|total_spending|transaction_count|avg_transaction|
++--------+--------------+-----------------+---------------+
+|Alice   |3112.47       |4                |778.12         |
+|Grace   |1659.0        |2                |829.5          |
+|Heidi   |800.0         |2                |400.0          |
+|David   |467.0         |2                |233.5          |
+|Ivan    |420.0         |2                |210.0          |
+|Eve     |408.0         |2                |204.0          |
+|Frank   |315.0         |2                |157.5          |
+|Charlie |294.5         |2                |147.25         |
+|Bob     |243.0         |2                |121.5          |
++--------+--------------+-----------------+---------------+
+
+
+Average Customer Spending: $857.66
+
+CUSTOMER VALUE CLASSIFICATION
++--------+--------------+-----------------+---------------+-------------+
+|customer|total_spending|transaction_count|avg_transaction|customer_type|
++--------+--------------+-----------------+---------------+-------------+
+|Alice   |3112.47       |4                |778.12         |High Value   |
+|Grace   |1659.0        |2                |829.5          |High Value   |
+|Heidi   |800.0         |2                |400.0          |Regular      |
+|David   |467.0         |2                |233.5          |Regular      |
+|Ivan    |420.0         |2                |210.0          |Regular      |
+|Eve     |408.0         |2                |204.0          |Regular      |
+|Frank   |315.0         |2                |157.5          |Regular      |
+|Charlie |294.5         |2                |147.25         |Regular      |
+|Bob     |243.0         |2                |121.5          |Regular      |
++--------+--------------+-----------------+---------------+-------------+
+
+
+HIGH-VALUE CUSTOMERS
++--------+--------------+-----------------+---------------+-------------+
+|customer|total_spending|transaction_count|avg_transaction|customer_type|
++--------+--------------+-----------------+---------------+-------------+
+|Alice   |3112.47       |4                |778.12         |High Value   |
+|Grace   |1659.0        |2                |829.5          |High Value   |
++--------+--------------+-----------------+---------------+-------------+
+
+
+============================================================
+EXERCISE 6 - ANOMALY THRESHOLD SENSITIVITY
+============================================================
+
+ANOMALY COUNTS BY THRESHOLD
+Threshold |z| > 1.5: 2 anomalies
+Threshold |z| > 2.0: 2 anomalies
+Threshold |z| > 2.5: 1 anomalies
+Threshold |z| > 3.0: 0 anomalies
+
+TRANSACTIONS WITH |z| > 1.5
++--------------+--------+-----------+-------+-----+
+|transaction_id|customer|category   |revenue|z    |
++--------------+--------+-----------+-------+-----+
+|T001          |Alice   |Electronics|1799.98|2.843|
+|T017          |Grace   |Electronics|1560.0 |2.36 |
++--------------+--------+-----------+-------+-----+
+
+
+TRANSACTIONS WITH |z| > 2.0
++--------------+--------+-----------+-------+-----+
+|transaction_id|customer|category   |revenue|z    |
++--------------+--------+-----------+-------+-----+
+|T001          |Alice   |Electronics|1799.98|2.843|
+|T017          |Grace   |Electronics|1560.0 |2.36 |
++--------------+--------+-----------+-------+-----+
+
+
+TRANSACTIONS WITH |z| > 2.5
++--------------+--------+-----------+-------+-----+
+|transaction_id|customer|category   |revenue|z    |
++--------------+--------+-----------+-------+-----+
+|T001          |Alice   |Electronics|1799.98|2.843|
++--------------+--------+-----------+-------+-----+
+
+
+TRANSACTIONS WITH |z| > 3.0
++--------------+--------+--------+-------+---+
+|transaction_id|customer|category|revenue|z  |
++--------------+--------+--------+-------+---+
++--------------+--------+--------+-------+---+
+
+
+============================================================
+EXERCISE 7 - RFM MARKETING ACTIONS
+============================================================
+
+CUSTOMER MARKETING RECOMMENDATIONS
++--------+------------+---------+--------+------------------+-------------------------------------------+
+|customer|recency_days|frequency|monetary|segment           |marketing_action                           |
++--------+------------+---------+--------+------------------+-------------------------------------------+
+|Alice   |0           |4        |3112.47 |Champions         |VIP rewards and exclusive offers           |
+|David   |28          |2        |467.0   |Loyal             |Loyalty rewards and cross-sell offers      |
+|Heidi   |2           |2        |800.0   |Potential Loyalist|Personalized offers to build loyalty       |
+|Grace   |3           |2        |1659.0  |Potential Loyalist|Personalized offers to build loyalty       |
+|Ivan    |1           |2        |420.0   |New / Promising   |Welcome offers and product recommendations |
+|Bob     |30          |2        |243.0   |Hibernating / Lost|Re-engagement campaign and special discount|
+|Frank   |4           |2        |315.0   |New / Promising   |Welcome offers and product recommendations |
+|Eve     |27          |2        |408.0   |Hibernating / Lost|Re-engagement campaign and special discount|
+|Charlie |29          |2        |294.5   |Hibernating / Lost|Re-engagement campaign and special discount|
++--------+------------+---------+--------+------------------+-------------------------------------------+
+
+
+============================================================
+OFFICIAL EXERCISE 4 - HIGH QUANTITY VS PAYMENT METHOD
+============================================================
+
+HIGH QUANTITY COUNTS BY PAYMENT METHOD
++--------------+-------------+-----+
+|payment_method|high_quantity|count|
++--------------+-------------+-----+
+|cash          |0            |3    |
+|cash          |1            |3    |
+|credit_card   |0            |8    |
+|credit_card   |1            |1    |
+|debit_card    |0            |5    |
++--------------+-------------+-----+
+
+
+HIGH QUANTITY PAYMENT METHOD CROSSTAB
++--------------+---------------+-------------+
+|payment_method|normal_quantity|high_quantity|
++--------------+---------------+-------------+
+|cash          |3              |3            |
+|debit_card    |5              |0            |
+|credit_card   |8              |1            |
++--------------+---------------+-------------+
+
+
+============================================================
+OFFICIAL EXERCISE 5 - RFM THRESHOLD TUNING
+============================================================
+
+ORIGINAL RFM SEGMENT COUNTS
++------------------+-----+
+|segment           |count|
++------------------+-----+
+|Hibernating / Lost|3    |
+|New / Promising   |2    |
+|Potential Loyalist|2    |
+|Loyal             |1    |
+|Champions         |1    |
++------------------+-----+
+
+
+RFM SEGMENT COMPARISON
++--------+---+---+---+-------+------------------+------------------+
+|customer|R  |F  |M  |rfm_sum|segment           |retuned_segment   |
++--------+---+---+---+-------+------------------+------------------+
+|Alice   |4  |4  |4  |12     |Champions         |Champions         |
+|David   |2  |3  |3  |8      |Loyal             |Loyal             |
+|Heidi   |4  |1  |3  |8      |Potential Loyalist|Potential Loyalist|
+|Grace   |3  |1  |4  |8      |Potential Loyalist|Potential Loyalist|
+|Ivan    |4  |1  |2  |7      |New / Promising   |Potential Loyalist|
+|Bob     |1  |4  |1  |6      |Hibernating / Lost|Loyal             |
+|Frank   |3  |2  |1  |6      |New / Promising   |New / Promising   |
+|Eve     |2  |2  |2  |6      |Hibernating / Lost|Hibernating / Lost|
+|Charlie |1  |3  |1  |5      |Hibernating / Lost|Loyal             |
++--------+---+---+---+-------+------------------+------------------+
+
+
+RETUNED RFM SEGMENT COUNTS
++------------------+-----+
+|retuned_segment   |count|
++------------------+-----+
+|Loyal             |3    |
+|Potential Loyalist|3    |
+|New / Promising   |1    |
+|Hibernating / Lost|1    |
+|Champions         |1    |
++------------------+-----+
+
+
+Number of customers whose segment changed: 3
+
+CUSTOMERS WITH CHANGED SEGMENTS
++--------+---+---+---+------------------+------------------+
+|customer|R  |F  |M  |segment           |retuned_segment   |
++--------+---+---+---+------------------+------------------+
+|Bob     |1  |4  |1  |Hibernating / Lost|Loyal             |
+|Charlie |1  |3  |1  |Hibernating / Lost|Loyal             |
+|Ivan    |4  |1  |2  |New / Promising   |Potential Loyalist|
++--------+---+---+---+------------------+------------------+
+
+
+============================================================
+OFFICIAL EXERCISE 6 - ANOMALY THRESHOLD COMPARISON
+============================================================
+
+Original threshold |z| > 2.0: 2 anomalies
+New threshold      |z| > 1.5: 2 anomalies
+
+ANOMALIES WITH NEW 1.5 THRESHOLD
++--------------+--------+-----------+-------+-----+
+|transaction_id|customer|category   |revenue|z    |
++--------------+--------+-----------+-------+-----+
+|T001          |Alice   |Electronics|1799.98|2.843|
+|T017          |Grace   |Electronics|1560.0 |2.36 |
++--------------+--------+-----------+-------+-----+
+
+
+IMPACT OF THRESHOLD CHANGE
+Lowering the threshold from 2.0 to 1.5 did not identify any additional anomalies in this dataset.
+
+============================================================
+FINAL CHALLENGE - REGION HEALTH SCORE
+============================================================
+
+REGION BUSINESS METRICS
++------+-------------+-----------------+----------------+-----------+
+|region|total_revenue|transaction_count|unique_customers|avg_revenue|
++------+-------------+-----------------+----------------+-----------+
+|North |3427.47      |6                |2               |571.25     |
+|East  |1953.5       |4                |2               |488.38     |
+|West  |1267.0       |4                |2               |316.75     |
+|South |1071.0       |6                |3               |178.5      |
++------+-------------+-----------------+----------------+-----------+
+
+
+REGION HEALTH SCORE
++------+-------------+-----------------+----------------+-------------+-----------------+--------------+-------------------+-------------+
+|region|total_revenue|transaction_count|unique_customers|revenue_score|transaction_score|customer_score|region_health_score|health_status|
++------+-------------+-----------------+----------------+-------------+-----------------+--------------+-------------------+-------------+
+|North |3427.47      |6                |2               |4            |4                |3             |11                 |Strong       |
+|South |1071.0       |6                |3               |1            |4                |4             |9                  |Moderate     |
+|East  |1953.5       |4                |2               |3            |3                |3             |9                  |Moderate     |
+|West  |1267.0       |4                |2               |2            |3                |3             |8                  |Moderate     |
++------+-------------+-----------------+----------------+-------------+-----------------+--------------+-------------------+-------------+
+
