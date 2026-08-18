@@ -1,14 +1,18 @@
-# Lab 14 - Big Data Analytics with PySpark
+#### Lab 14 - Big Data Analytics with PySpark
 
-## CST8921 - Cloud Industry Trends
+#### CST8921 - Cloud Industry Trends
 
 This lab demonstrates big data analytics techniques using **Apache Spark and PySpark**. The lab works with a sample transaction dataset and applies descriptive analytics, diagnostic analytics, window functions, feature engineering, customer segmentation, anomaly detection, and Parquet-based data engineering.
 
 The implementation was tested successfully using **PySpark 4.2.0**.
 
+
+#### Output Screenshot:  
+https://github.com/hycst/CST8921-Lab14/tree/main/ScreenShot
+
 ---
 
-## Technologies Used
+#### Technologies Used
 
 - Python
 - Apache Spark
@@ -21,7 +25,7 @@ The implementation was tested successfully using **PySpark 4.2.0**.
 
 ---
 
-## Project Structure
+#### Project Structure
 
 ```text
 lab14/
@@ -43,9 +47,9 @@ lab14/
 
 ---
 
-# Environment Setup
+#### Environment Setup
 
-## 1. Windows Environment
+#### 1. Windows Environment
 
 The project files are stored in:
 
@@ -59,7 +63,7 @@ For this reason, the complete lab is run using **Ubuntu through WSL 2**.
 
 ---
 
-## 2. Start Ubuntu WSL
+#### 2. Start Ubuntu WSL
 
 From Windows PowerShell:
 
@@ -75,7 +79,7 @@ cd /mnt/c/2026_2/8921_Industry_Trend/lab14
 
 ---
 
-## 3. Activate the Python Virtual Environment
+#### 3. Activate the Python Virtual Environment
 
 The Linux virtual environment is stored in the Ubuntu home directory.
 
@@ -105,7 +109,7 @@ python -c "import pyspark; print(pyspark.__version__)"
 
 ---
 
-## 4. Java Requirement
+#### 4. Java Requirement
 
 Apache Spark requires Java.
 
@@ -125,7 +129,7 @@ openjdk version "17.0.19"
 
 ---
 
-# Running the Lab
+#### Running the Lab
 
 Run the complete PySpark program from WSL:
 
@@ -155,7 +159,7 @@ indicates successful program execution.
 
 ---
 
-# Part 1 - Descriptive Analytics
+#### Part 1 - Descriptive Analytics
 
 The first part performs descriptive analysis of the transaction data.
 
@@ -168,7 +172,7 @@ The analysis includes:
 - Transaction counts
 - Units sold
 
-### Key Finding
+#### Key Finding
 
 Electronics generated the highest total revenue:
 
@@ -189,7 +193,7 @@ South: $1,071.00
 
 ---
 
-# Part 2 - Diagnostic Analytics
+#### Part 2 - Diagnostic Analytics
 
 Diagnostic analytics was used to investigate patterns in the transaction data.
 
@@ -210,7 +214,7 @@ Cash:        $128.25
 
 ---
 
-# Part 3 - Window Functions
+#### Part 3 - Window Functions
 
 PySpark window functions were used to analyze transactions while preserving individual rows.
 
@@ -236,7 +240,7 @@ Window functions allow calculations across related rows without collapsing the d
 
 ---
 
-# Part 4 - Feature Engineering and RFM
+#### Part 4 - Feature Engineering and RFM
 
 Additional analytical features were created from the transaction data.
 
@@ -270,7 +274,7 @@ RFM = R4F4M4
 
 ---
 
-# Part 5 - Customer Segmentation
+#### Part 5 - Customer Segmentation
 
 Customers were segmented according to their RFM scores.
 
@@ -300,7 +304,7 @@ The segmentation can support different marketing strategies for different custom
 
 ---
 
-# Part 6 - Anomaly Detection
+#### Part 6 - Anomaly Detection
 
 Z-scores were used to identify unusual transaction revenue.
 
@@ -332,7 +336,7 @@ This demonstrates that higher thresholds make anomaly detection more restrictive
 
 ---
 
-# Part 7 - Data Engineering with Parquet
+#### Part 7 - Data Engineering with Parquet
 
 The enriched transaction dataset was written to **Parquet format** and read back into Spark.
 
@@ -354,11 +358,12 @@ This confirmed that the dataset was successfully written and read without losing
 
 ---
 
-# Part 8 - Hands-On Exercises
+#### Part 8 - Hands-On Exercises
 
 Several additional analytical exercises were completed.
 
-## Exercise 1 - Most Expensive Category per Region
+ 
+#### Exercise 1 - Most Expensive Category per Region
 
 Average revenue per unit was calculated and categories were ranked within each region.
 
@@ -373,7 +378,7 @@ West  -> Electronics -> $525.00
 
 ---
 
-## Exercise 2 - Credit Card vs Cash
+#### Exercise 2 - Credit Card vs Cash
 
 Average revenue was compared between credit-card and cash transactions.
 
@@ -387,7 +392,7 @@ Credit-card transactions had higher average revenue in this dataset.
 
 ---
 
-## Exercise 3 - Weekend Effect
+#### Exercise 3 - Weekend Effect
 
 Weekend and weekday transactions were compared.
 
@@ -401,7 +406,7 @@ Weekday transactions had higher average revenue.
 
 ---
 
-## Exercise 4 - High Quantity vs Payment Method
+#### Exercise 4 - High Quantity vs Payment Method
 
 A high-quantity transaction was defined as:
 
@@ -423,7 +428,7 @@ Because the dataset contains only 20 transactions, this result should be interpr
 
 ---
 
-## Exercise 5 - RFM Threshold Tuning
+#### Exercise 5 - RFM Threshold Tuning
 
 The RFM segmentation thresholds were modified to determine how sensitive the customer classifications were to the business rules.
 
@@ -444,7 +449,7 @@ This demonstrates that RFM segmentation depends on the thresholds selected by th
 
 ---
 
-## Exercise 6 - Anomaly Threshold Comparison
+#### Exercise 6 - Anomaly Threshold Comparison
 
 The anomaly threshold was changed from:
 
@@ -464,7 +469,7 @@ Therefore, lowering the threshold did not identify additional anomalies because 
 
 ---
 
-# Final Challenge - Region Health Score
+#### Final Challenge - Region Health Score
 
 A composite region health score was created using:
 
@@ -487,7 +492,7 @@ The composite score demonstrates how multiple KPIs can be combined rather than e
 
 ---
 
-# Key Learning Outcomes
+#### Key Learning Outcomes
 
 This lab demonstrates how PySpark can be used for scalable analytical workloads.
 
@@ -508,7 +513,7 @@ The lab also demonstrated the difference between performing analytics and turnin
 
 ---
 
-# Environment Note
+#### Environment Note
 
 The main Python source code is stored on the Windows filesystem:
 
@@ -535,7 +540,7 @@ For this project:
 
 ---
 
-# Final Verification
+#### Final Verification
 
 The complete application was executed using:
 
